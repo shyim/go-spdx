@@ -40,12 +40,17 @@ func main() {
     // Validate a slice of licenses (combined with OR)
     valid, _ = s.Validate([]string{"MIT", "Apache-2.0"})
     fmt.Println("Slice valid:", valid) // true
+
+    // Look up a single identifier and get its canonical spelling
+    license, found := s.GetLicenseByIdentifier("mit")
+    fmt.Println(found, license.Identifier, license.Name) // true MIT MIT License
 }
 ```
 
 ## Features
 
 - Validate SPDX license identifiers (case-insensitive)
+- Look up license list entries (canonical identifier, name, OSI approval, deprecation)
 - Validate compound expressions with `AND`, `OR`, and `WITH`
 - Supports `LicenseRef-*` and `DocumentRef-*:LicenseRef-*` identifiers
 - Handles deprecated license identifiers (`+` suffix)

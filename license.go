@@ -74,6 +74,38 @@ func (s *SpdxLicenses) Validate(license interface{}) (bool, error) {
 	}
 }
 
+// License is an entry of the SPDX license list.
+type License struct {
+	// Identifier is the canonical SPDX identifier, e.g. "MIT" for the input "mit".
+	Identifier  string
+	Name        string
+	OSIApproved bool
+	Deprecated  bool
+}
+
+// GetLicenseByIdentifier looks up a single license identifier
+// case-insensitively and returns its SPDX list entry, including the canonical
+// spelling of the identifier. Expressions, LicenseRef-* identifiers and the
+// special values NONE and NOASSERTION are not list entries and return false.
+func (s *SpdxLicenses) GetLicenseByIdentifier(identifier string) (License, bool) {
+	entry, ok := s.licenses[strings.ToLower(identifier)]
+	if !ok {
+		return License{}, false
+	}
+
+	canonical, _ := entry[0].(string)
+	name, _ := entry[1].(string)
+	osiApproved, _ := entry[2].(bool)
+	deprecated, _ := entry[3].(bool)
+
+	return License{
+		Identifier:  canonical,
+		Name:        name,
+		OSIApproved: osiApproved,
+		Deprecated:  deprecated,
+	}, true
+}
+
 // loadLicenses loads licenses from the JSON file.
 func (s *SpdxLicenses) loadLicenses() error {
 	if len(s.licenses) > 0 {
